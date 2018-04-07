@@ -1,33 +1,61 @@
 import operator
+import random
+import os
 
-class player():
-  def __init__(self):
-    self.name = input ("Enter name: ")
-    self.initiative = int (input("Enter %s's initiative: "%self.name))
-  initiative = None
-  name = None
-
-class monster():
-    def __init__(self, monster_count):
-        self.initiative = int(input("Enter monster %d's initiative:", %monster_count))
-        self.name = ("Monster%d", %monster_count)
-    initiative = None
+#Abstract Base Class for game entities
+class entity():
     name = None
+    initiative = None
 
+#Implementation of entity for player objects
+class player(entity):
+    def __init__(self):
+        self.name = input ("Enter name: ")
+    def get_initiative(self):
+        self.initiative = int (input("Enter %s's initiative: " % (self.name)))
+
+#Implementation of entity for monster/creature objects
+class monster(entity):
+    def __init__(self, monster_count):
+        self.initiative = int(random.randint(1, 20))
+        self.name = ("Monster%d" % (monster_count))
+    dex_mod = 0
+
+new_game = None
+
+os.system ('cls')
+
+#Retrieves number of players from the user
 number_of_players = int(input ("Enter the number of players: "))
-number_of_monsters = int(input("Enter the number of monsters: "))
-players = list ()
-monsters = list()
-entities = list()
-sorted_entities = list()
 
-for i in range(number_of_players):
-  entities.append(player())
-for i in range(number_of_monsters):
-  entities.append(monster())
+#Initializes empty lists to contain players outside of the loop
+players = []
 
-sorted_entities = sorted(entities, reverse = True, key=operator.attrgetter("initiative"))
-for obj in entities:
-    print ("{first}'s initiative is {second}".format(first = obj.name, second = obj.initiative))
-for obj in sorted_entities:
-    print ("{first}'s initiative is {second}".format(first = obj.name, second = obj.initiative))
+#Populates player list with initialized objects to be stored
+for i in range(0, number_of_players):
+  players.append(player())
+
+while (new_game != 'Q' or new_game != 'q'):
+    monsters = []
+    entities = []
+    sorted_entities = []
+    os.system ('cls')
+
+    #Retrieves number of monsters from the user
+    number_of_monsters = int(input("Enter the number of monsters: "))
+
+    #Gets the initiative for all entities
+    for i in range(0, number_of_monsters):
+        monsters.append(monster(int(i + 1)))
+    for i in players:
+        i.get_initiative()
+
+    #Compiles entities into one list and sorts them in descending initiative order
+    entities = players + monsters
+    sorted_entities = sorted(entities, reverse = True, key=operator.attrgetter("initiative"))
+
+    #Prints the sorted list of entities
+    os.system('cls')
+    for obj in sorted_entities:
+        print ("%s's initiative is %d" % (obj.name, obj.initiative))
+    new_game = input ("(Enter) - New Battle    (Q) - Quit\n")
